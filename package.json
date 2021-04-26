@@ -1,0 +1,114 @@
+{
+	"name": "idris2-lsp",
+	"description": "idris2-lsp language server and extensions",
+	"author": "Rodrigo B. de Oliveira",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bamboo/idris2-lsp-vscode"
+	},
+	"publisher": "bamboo",
+	"categories": [],
+	"keywords": [
+		"idris dart"
+	],
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"activationEvents": [
+		"onLanguage:idris"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Idris 2 LSP",
+			"properties": {
+				"idris2-lsp.path": {
+          "type": "string",
+          "default": "idris2-lsp",
+          "description": "Command to start Idris 2 language server process."
+        },
+				"idris2-lsp.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		},
+		"languages": [
+			{
+				"id": "idris",
+				"aliases": [
+					"Idris",
+					"idris"
+				],
+				"configuration": "./language-configuration.json",
+				"extensions": [
+					".idr"
+				]
+			},
+			{
+				"id": "ipkg",
+				"aliases": [
+					"iPKG",
+					"ipkg"
+				],
+				"extensions": [
+					".ipkg"
+				]
+			},
+			{
+				"id": "lidr",
+				"aliases": [
+					"lidr",
+					"Literate Idris",
+					"literate idris"
+				],
+				"extensions": [
+					".lidr"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "idris",
+				"scopeName": "source.idris",
+				"path": "./syntaxes/idris.tmLanguage.json"
+			},
+			{
+				"language": "ipkg",
+				"scopeName": "source.ipkg",
+				"path": "./syntaxes/ipkg.tmLanguage.json"
+			},
+			{
+				"language": "lidr",
+				"scopeName": "source.idris.literate",
+				"path": "./syntaxes/lidr.tmLanguage.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^8.2.2",
+		"@types/node": "^12.12.0",
+		"@typescript-eslint/eslint-plugin": "^4.21.0",
+		"@typescript-eslint/parser": "^4.21.0",
+		"eslint": "^7.23.0",
+		"mocha": "^8.3.2",
+		"typescript": "^4.2.3"
+	}
+}

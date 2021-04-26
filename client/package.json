@@ -1,0 +1,22 @@
+{
+	"name": "idris2-lsp-client",
+	"description": "Idris 2 language server client",
+	"author": "Rodrigo B. de Oliveira",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "bamboo",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bamboo/idris2-lsp-vscode"
+	},
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.52.0",
+		"vscode-test": "^1.3.0"
+	}
+}
