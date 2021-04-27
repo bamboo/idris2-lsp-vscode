@@ -1,4 +1,7 @@
-import { workspace, ExtensionContext } from 'vscode';
+import {
+	workspace,
+	ExtensionContext,
+} from 'vscode';
 
 import {
 	LanguageClient,
@@ -9,21 +12,21 @@ import {
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-	const extensionConfig = workspace.getConfiguration("idris2-lsp")
-	let command: string = extensionConfig.get("path") || ""
-	let serverOptions: ServerOptions = {
+	const extensionConfig = workspace.getConfiguration("idris2-lsp");
+	const command: string = extensionConfig.get("path") || "";
+	const serverOptions: ServerOptions = {
 		run: { command: command, },
 		debug: { command: command, }
 	};
-	let clientOptions: LanguageClientOptions = {
+	const clientOptions: LanguageClientOptions = {
 		documentSelector: [{ scheme: 'file', language: 'idris' }],
 		synchronize: {
 			// fileEvents: workspace.createFileSystemWatcher('**/.idr')
-		}
+		},
 	};
 	client = new LanguageClient(
 		'idris2-lsp',
-		'Idris 2 Language Server',
+		'Idris 2 LSP Client',
 		serverOptions,
 		clientOptions
 	);
