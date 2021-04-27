@@ -9,9 +9,12 @@ In order to simplify testing at this early stage, the extension was made standal
 - Run `npm install` in this folder
 - Open VS Code on this folder
 - Press `Ctrl+Shift+B` / `Cmd+Shift+B` to compile everything
-- Switch to the Debug viewlet
-- Select `Launch Client` from the drop down
-- Run the launch config
+- Open the file `client/src/extension.ts`
+- Switch to the Debug viewlet (it's in the leftmost column)
+- Click `Run and Debug`
+- Select `VSCode Extension development`
+- A new window will open
+- Open your idris files/repos in this window
 
 ## Configuring the extension
 
