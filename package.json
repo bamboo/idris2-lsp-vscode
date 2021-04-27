@@ -1,6 +1,6 @@
 {
 	"name": "idris2-lsp",
-	"description": "idris2-lsp language server and extensions",
+	"description": "Idris2 client for the language server protocol",
 	"author": "Rodrigo B. de Oliveira",
 	"license": "MIT",
 	"version": "0.0.1",
@@ -11,7 +11,8 @@
 	"publisher": "bamboo",
 	"categories": [],
 	"keywords": [
-		"idris dart"
+		"idris",
+		"lsp"
 	],
 	"engines": {
 		"vscode": "^1.43.0"
@@ -23,13 +24,13 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "Idris 2 LSP",
+			"title": "Idris2",
 			"properties": {
 				"idris2-lsp.path": {
-          "type": "string",
-          "default": "idris2-lsp",
-          "description": "Command to start Idris 2 language server process."
-        },
+					"type": "string",
+					"default": "idris2-lsp",
+					"description": "Command to start Idris 2 language server process."
+				},
 				"idris2-lsp.trace.server": {
 					"scope": "window",
 					"type": "string",
