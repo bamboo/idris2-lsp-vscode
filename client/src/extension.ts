@@ -16,12 +16,12 @@ import { Readable } from 'stream';
 
 let client: LanguageClient;
 
-const clientName = 'Idris 2 LSP Client';
+const baseName = 'Idris 2 LSP';
 
 export function activate(_context: ExtensionContext) {
   const extensionConfig = workspace.getConfiguration("idris2-lsp");
   const command: string = extensionConfig.get("path") || "";
-  const debugChannel = window.createOutputChannel(clientName + ' Debug');
+  const debugChannel = window.createOutputChannel(baseName + ' Server');
   const serverOptions: ServerOptions = () => new Promise<StreamInfo>((resolve, reject) => {
     const serverProcess = spawn(command, [], { cwd: rootPath() });
     if (!serverProcess || !serverProcess.pid) {
@@ -42,7 +42,7 @@ export function activate(_context: ExtensionContext) {
   };
   client = new LanguageClient(
     'idris2-lsp',
-    clientName,
+    baseName + ' Client',
     serverOptions,
     clientOptions
   );
