@@ -34,7 +34,7 @@ export function activate(_context: ExtensionContext) {
 
     resolve({
       writer: serverProcess.stdin,
-      reader: Readable.from(sanitize(serverProcess.stdout)),
+      reader: sanitized(serverProcess.stdout),
     });
   });
   const clientOptions: LanguageClientOptions = {
@@ -57,7 +57,7 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 /**
- * Removes spurious content from the given [source], anything between proper
+ * Returns a new stream with spurious content removed, anything between proper
  * [LSP messages](https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/)
  * is discarded.
  * 
@@ -65,6 +65,10 @@ export function deactivate(): Thenable<void> | undefined {
  *
  * @param source idris2-lsp stdout
  */
+function sanitized(source: Readable): NodeJS.ReadableStream {
+  return Readable.from(sanitize(source));
+}
+
 async function* sanitize(source: Readable) {
 
   let waitingFor = 0;
