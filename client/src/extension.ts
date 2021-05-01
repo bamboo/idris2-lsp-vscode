@@ -112,16 +112,17 @@ function findHeader(buffer: Buffer): undefined | ContentHeader {
   // Search the buffer for the pattern `Content-Length: \d+\r\n\r\n`
   let searchIndex = 0;
   while (searchIndex < buffer.length) {
-    const begin = buffer.indexOf('Content-Length: ', searchIndex);
+    const headerPattern = 'Content-Length: ';
+    const begin = buffer.indexOf(headerPattern, searchIndex);
     if (begin < 0) {
       break;
     }
-    const lengthBegin = begin + 'Content-Length: '.length;
+    const lengthBegin = begin + headerPattern.length;
     const separatorIndex = buffer.indexOf('\r\n\r\n', lengthBegin);
     if (separatorIndex > lengthBegin) {
-      const lengthStr = buffer.toString('utf-8', lengthBegin, separatorIndex);
-      if (lengthStr.match(/^\d+$/)) {
-        const contentLength = Number.parseInt(lengthStr);
+      const lengthBuffer = buffer.subarray(lengthBegin, separatorIndex);
+      if (lengthBuffer.every((value, _index, _array) => isDigit(value))) {
+        const contentLength = Number.parseInt(lengthBuffer.toString('utf-8'));
         const end = separatorIndex + 4;
         return { begin, end, contentLength };
       }
@@ -130,6 +131,14 @@ function findHeader(buffer: Buffer): undefined | ContentHeader {
   }
   return undefined;
 }
+
+function isDigit(value: number): boolean {
+  return value >= zero && value <= nine;
+}
+
+const zero = '0'.charCodeAt(0);
+
+const nine = '9'.charCodeAt(0);
 
 function rootPath(): string | undefined {
   const folders = workspace.workspaceFolders;
