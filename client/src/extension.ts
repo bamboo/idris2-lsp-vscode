@@ -3,7 +3,6 @@ import {
   workspace,
   ExtensionContext,
   window,
-  OutputChannel,
 } from 'vscode';
 
 import {
@@ -19,7 +18,7 @@ let client: LanguageClient;
 
 const clientName = 'Idris 2 LSP Client';
 
-export function activate(context: ExtensionContext) {
+export function activate(_context: ExtensionContext) {
   const extensionConfig = workspace.getConfiguration("idris2-lsp");
   const command: string = extensionConfig.get("path") || "";
   const debugChannel = window.createOutputChannel(clientName + ' Debug');
@@ -31,13 +30,11 @@ export function activate(context: ExtensionContext) {
 
     const stderr = serverProcess.stderr;
     stderr.setEncoding('utf-8');
-    stderr.on('data', data => {
-      return debugChannel.append(data);
-    });
+    stderr.on('data', data => debugChannel.append(data));
 
     resolve({
       writer: serverProcess.stdin,
-      reader: Readable.from(filterMessages(serverProcess.stdout)),
+      reader: Readable.from(sanitize(serverProcess.stdout)),
     });
   });
   const clientOptions: LanguageClientOptions = {
@@ -60,47 +57,57 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 /**
- * Removes spurious content from the given [source]. This is necessary because
- * the Idris 2 core writes error messages directly to stdout.
+ * Removes spurious content from the given [source], anything between proper
+ * [LSP messages](https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/)
+ * is discarded.
+ * 
+ * This is necessary because the Idris 2 core writes error messages directly to stdout.
  *
  * @param source idris2-lsp stdout
  */
-async function* filterMessages(source: Readable) {
+async function* sanitize(source: Readable) {
 
   let waitingFor = 0;
-  let acc = [];
+  let chunks = [];
 
-  for await (const buffer of source) {
+  for await (const chunk of source) {
     if (waitingFor > 0) {
-      const newBuffer = buffer.length == waitingFor
-        ? buffer
-        : buffer.subarray(0, waitingFor);
-      yield newBuffer;
-      waitingFor -= newBuffer.length;
+      const newChunk = chunk.length <= waitingFor
+        ? chunk
+        : chunk.subarray(0, waitingFor); // ignore anything after the expected content length
+
+      waitingFor -= newChunk.length;
+
+      yield newChunk;
       continue;
     }
 
-    acc.push(buffer);
+    chunks.push(chunk);
 
-    const pending = Buffer.concat(acc);
-    const start = pending.indexOf('Content-Length: ');
-    if (start >= 0) {
-      const lengthStart = start + 'Content-Length: '.length;
-      const end = pending.indexOf('\r\n\r\n', lengthStart);
-      if (end > start) {
-        // found the header
-        const headerSize = end + 4 - start;
-        const lengthStr = pending.subarray(lengthStart, end).toString('utf-8');
-        const expectedLength = Number.parseInt(lengthStr);
-        const message = pending.subarray(start, start + headerSize + expectedLength);
-        yield message;
+    const pending = Buffer.concat(chunks);
+    const headerBegin = pending.indexOf('Content-Length: ');
+    if (headerBegin >= 0) {
+      const lengthBegin = headerBegin + 'Content-Length: '.length;
+      const separatorIndex = pending.indexOf('\r\n\r\n', lengthBegin);
+      if (separatorIndex > lengthBegin) {
+        // Found the header?
+        const lengthStr = pending.subarray(lengthBegin, separatorIndex).toString('utf-8');
+        if (lengthStr.match(/^\d+$/)) {
+          const expectedLength = Number.parseInt(lengthStr);
+          const headerSize = separatorIndex + 4 - headerBegin;
+          const newChunk = pending.subarray(headerBegin, headerBegin + headerSize + expectedLength);
 
-        waitingFor = expectedLength + headerSize - message.length;
-        acc = [];
+          waitingFor = headerSize + expectedLength - newChunk.length;
+          chunks = [];
 
-        continue;
+          yield newChunk;
+          continue;
+        }
       }
     }
+
+    // Reuse concat result
+    chunks = [pending];
   }
 }
 
