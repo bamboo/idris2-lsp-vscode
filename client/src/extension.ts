@@ -85,30 +85,50 @@ async function* sanitize(source: Readable) {
     chunks.push(chunk);
 
     const pending = Buffer.concat(chunks);
-    const headerBegin = pending.indexOf('Content-Length: ');
-    if (headerBegin >= 0) {
-      const lengthBegin = headerBegin + 'Content-Length: '.length;
-      const separatorIndex = pending.indexOf('\r\n\r\n', lengthBegin);
-      if (separatorIndex > lengthBegin) {
-        // Found the header?
-        const lengthStr = pending.subarray(lengthBegin, separatorIndex).toString('utf-8');
-        if (lengthStr.match(/^\d+$/)) {
-          const expectedLength = Number.parseInt(lengthStr);
-          const headerSize = separatorIndex + 4 - headerBegin;
-          const newChunk = pending.subarray(headerBegin, headerBegin + headerSize + expectedLength);
+    const header = findHeader(pending);
+    if (header) {
+      const contentLength = header.contentLength;
+      const newChunk = pending.subarray(header.begin, header.end + contentLength);
+      const headerLength = header.end - header.begin;
+      waitingFor = headerLength + contentLength - newChunk.length;
+      chunks = [];
 
-          waitingFor = headerSize + expectedLength - newChunk.length;
-          chunks = [];
-
-          yield newChunk;
-          continue;
-        }
-      }
+      yield newChunk;
+      continue;
     }
 
     // Reuse concat result
     chunks = [pending];
   }
+}
+
+interface ContentHeader {
+  begin: number,
+  end: number,
+  contentLength: number
+}
+
+function findHeader(buffer: Buffer): undefined | ContentHeader {
+  // Search the buffer for the pattern `Content-Length: \d+\r\n\r\n`
+  let searchIndex = 0;
+  while (searchIndex < buffer.length) {
+    const begin = buffer.indexOf('Content-Length: ', searchIndex);
+    if (begin < 0) {
+      break;
+    }
+    const lengthBegin = begin + 'Content-Length: '.length;
+    const separatorIndex = buffer.indexOf('\r\n\r\n', lengthBegin);
+    if (separatorIndex > lengthBegin) {
+      const lengthStr = buffer.toString('utf-8', lengthBegin, separatorIndex);
+      if (lengthStr.match(/^\d+$/)) {
+        const contentLength = Number.parseInt(lengthStr);
+        const end = separatorIndex + 4;
+        return { begin, end, contentLength };
+      }
+    }
+    searchIndex = lengthBegin;
+  }
+  return undefined;
 }
 
 function rootPath(): string | undefined {
