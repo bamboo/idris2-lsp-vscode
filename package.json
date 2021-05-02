@@ -20,7 +20,7 @@
 	"activationEvents": [
 		"onLanguage:idris"
 	],
-	"main": "./client/out/extension",
+	"main": "./out/extension",
 	"contributes": {
 		"configuration": {
 			"type": "object",
@@ -100,16 +100,21 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
-		"postinstall": "cd client && npm install && cd ..",
 		"test": "sh ./scripts/e2e.sh"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^8.2.2",
 		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.52.0",
 		"@typescript-eslint/eslint-plugin": "^4.21.0",
 		"@typescript-eslint/parser": "^4.21.0",
+		"esbuild": "^0.11.17",
 		"eslint": "^7.23.0",
 		"mocha": "^8.3.2",
-		"typescript": "^4.2.3"
+		"typescript": "^4.2.3",
+		"vscode-test": "^1.3.0"
 	}
 }
