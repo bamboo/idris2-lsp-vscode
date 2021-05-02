@@ -76,6 +76,7 @@ async function* sanitize(source: Readable) {
 
   for await (const chunk of source) {
     if (waitingFor > 0) {
+      // We are already reading a message
       const newChunk = chunk.length <= waitingFor
         ? chunk
         : chunk.subarray(0, waitingFor); // ignore anything after the expected content length
@@ -117,17 +118,18 @@ function findHeader(buffer: Buffer): undefined | ContentHeader {
   let searchIndex = 0;
   while (searchIndex < buffer.length) {
     const headerPattern = 'Content-Length: ';
+    const separatorPattern = '\r\n\r\n';
     const begin = buffer.indexOf(headerPattern, searchIndex);
     if (begin < 0) {
       break;
     }
     const lengthBegin = begin + headerPattern.length;
-    const separatorIndex = buffer.indexOf('\r\n\r\n', lengthBegin);
+    const separatorIndex = buffer.indexOf(separatorPattern, lengthBegin);
     if (separatorIndex > lengthBegin) {
       const lengthBuffer = buffer.subarray(lengthBegin, separatorIndex);
       if (lengthBuffer.every((value, _index, _array) => isDigit(value))) {
         const contentLength = Number.parseInt(lengthBuffer.toString('utf-8'));
-        const end = separatorIndex + 4;
+        const end = separatorIndex + separatorPattern.length;
         return { begin, end, contentLength };
       }
     }
