@@ -15,7 +15,7 @@
 		},
 		{
 			"type": "npm",
-			"script": "watch",
+			"script": "esbuild-watch",
 			"isBackground": true,
 			"group": {
 				"kind": "build",

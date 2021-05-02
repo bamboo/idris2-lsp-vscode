@@ -20,7 +20,7 @@
 	"activationEvents": [
 		"onLanguage:idris"
 	],
-	"main": "./out/extension",
+	"main": "./out/main.js",
 	"contributes": {
 		"configuration": {
 			"type": "object",
@@ -97,9 +97,13 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+		"vscode:prepublish": "npm run -S esbuild-base -- --minify",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+		"esbuild": "npm run -S esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
+		"test-compile": "tsc -p ./",
 		"test": "sh ./scripts/e2e.sh"
 	},
 	"dependencies": {

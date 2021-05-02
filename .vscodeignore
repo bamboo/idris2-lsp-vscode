@@ -12,3 +12,4 @@ node_modules/**
 !node_modules/vscode-languageserver-protocol/**
 !node_modules/vscode-languageserver-types/**
 !node_modules/semver/**
+!node_modules/lru-cache/**
