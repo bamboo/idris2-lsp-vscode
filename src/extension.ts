@@ -14,11 +14,9 @@ import {
 
 import { Readable } from 'stream';
 
-let client: LanguageClient;
-
 const baseName = 'Idris 2 LSP';
 
-export function activate(_context: ExtensionContext) {
+export function activate(context: ExtensionContext) {
   const extensionConfig = workspace.getConfiguration("idris2-lsp");
   const command: string = extensionConfig.get("path") || "";
   const debugChannel = window.createOutputChannel(baseName + ' Server');
@@ -35,25 +33,36 @@ export function activate(_context: ExtensionContext) {
     resolve({
       writer: serverProcess.stdin,
       reader: sanitized(serverProcess.stdout),
+      detached: true // let us handle the disposal of the server
+    });
+
+    context.subscriptions.push({
+      dispose: () => {
+        sendExitCommandTo(serverProcess.stdin);
+      }
     });
   });
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: 'file', language: 'idris' }],
   };
-  client = new LanguageClient(
+  const client = new LanguageClient(
     'idris2-lsp',
     baseName + ' Client',
     serverOptions,
     clientOptions
   );
   client.start();
+  context.subscriptions.push({
+    dispose: () => {
+      client.stop();
+    }
+  });
 }
 
-export function deactivate(): Thenable<void> | undefined {
-  if (!client) {
-    return undefined;
-  }
-  return client.stop();
+function sendExitCommandTo(server: NodeJS.WritableStream) {
+  const command = '{"jsonrpc":"2.0","id":1,"method":"exit"}';
+  server.write(`Content-Length: ${command.length}\r\n\r\n`);
+  server.write(command);
 }
 
 /**

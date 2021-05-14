@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.0.4
+
+- Don't keep `chez` executable running after quitting.
+
 ## 0.0.3
 
 - Make extension compatible with vscode `1.36.1`
