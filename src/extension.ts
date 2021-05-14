@@ -26,6 +26,12 @@ export function activate(context: ExtensionContext) {
       return reject(`Launching server using command ${command} failed.`);
     }
 
+    context.subscriptions.push({
+      dispose: () => {
+        sendExitCommandTo(serverProcess.stdin);
+      }
+    });
+
     const stderr = serverProcess.stderr;
     stderr.setEncoding('utf-8');
     stderr.on('data', data => debugChannel.append(data));
@@ -34,12 +40,6 @@ export function activate(context: ExtensionContext) {
       writer: serverProcess.stdin,
       reader: sanitized(serverProcess.stdout),
       detached: true // let us handle the disposal of the server
-    });
-
-    context.subscriptions.push({
-      dispose: () => {
-        sendExitCommandTo(serverProcess.stdin);
-      }
     });
   });
   const clientOptions: LanguageClientOptions = {

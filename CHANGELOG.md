@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.0.5
+
+- Minor change
+
 ## 0.0.4
 
 - Don't keep `chez` executable running after quitting.
