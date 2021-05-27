@@ -43,7 +43,10 @@ export function activate(context: ExtensionContext) {
     });
   });
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'idris' }],
+    documentSelector: [
+      { scheme: 'file', language: 'idris' },
+      { scheme: 'file', language: 'lidr' }
+    ],
   };
   const client = new LanguageClient(
     'idris2-lsp',
