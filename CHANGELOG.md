@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.3.0
+
+- Activate extension on literal Idris files
+
 ## 0.2.0
 
 - Support literal Idris files (`*.lidr`)
