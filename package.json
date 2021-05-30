@@ -3,7 +3,7 @@
 	"description": "Idris2 client for the language server protocol",
 	"author": "Rodrigo B. de Oliveira",
 	"license": "MIT",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/bamboo/idris2-lsp-vscode"
