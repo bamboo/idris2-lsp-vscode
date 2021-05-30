@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.4.0
+
+- Fix `exit` message so `chez` will actually quit.
+
 ## 0.3.0
 
 - Activate extension on literal Idris files

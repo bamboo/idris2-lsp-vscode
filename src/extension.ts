@@ -63,7 +63,7 @@ export function activate(context: ExtensionContext) {
 }
 
 function sendExitCommandTo(server: NodeJS.WritableStream) {
-  const command = '{"jsonrpc":"2.0","id":1,"method":"exit"}';
+  const command = '{"jsonrpc":"2.0","method":"exit"}';
   server.write(`Content-Length: ${command.length}\r\n\r\n`);
   server.write(command);
 }
