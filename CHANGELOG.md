@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.5.0
+
+- Avoid losing messages due to stdout sanitization.
+
 ## 0.4.0
 
 - Fix `exit` message so `chez` will actually quit.

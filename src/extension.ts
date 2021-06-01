@@ -89,13 +89,18 @@ async function* sanitize(source: Readable) {
   for await (const chunk of source) {
     if (waitingFor > 0) {
       // We are already reading a message
-      const newChunk = chunk.length <= waitingFor
-        ? chunk
-        : chunk.subarray(0, waitingFor); // ignore anything after the expected content length
+      if (chunk.length > waitingFor) {
+        const remaining = chunk.subarray(waitingFor);
+        chunks.push(remaining);
 
-      waitingFor -= newChunk.length;
+        const awaited = chunk.subarray(0, waitingFor);
+        waitingFor = 0;
+        yield awaited;
+      }
 
-      yield newChunk;
+      waitingFor -= chunk.length;
+
+      yield chunk;
       continue;
     }
 
