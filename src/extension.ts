@@ -3,6 +3,7 @@ import {
   workspace,
   ExtensionContext,
   window,
+  OutputChannel,
 } from 'vscode';
 
 import {
@@ -38,7 +39,7 @@ export function activate(context: ExtensionContext) {
 
     resolve({
       writer: serverProcess.stdin,
-      reader: sanitized(serverProcess.stdout),
+      reader: sanitized(serverProcess.stdout, debugChannel),
       detached: true // let us handle the disposal of the server
     });
   });
@@ -77,11 +78,11 @@ function sendExitCommandTo(server: NodeJS.WritableStream) {
  *
  * @param source idris2-lsp stdout
  */
-function sanitized(source: Readable): NodeJS.ReadableStream {
-  return Readable.from(sanitize(source));
+function sanitized(source: Readable, debugChannel: OutputChannel): NodeJS.ReadableStream {
+  return Readable.from(sanitize(source, debugChannel));
 }
 
-async function* sanitize(source: Readable) {
+async function* sanitize(source: Readable, debugChannel: OutputChannel) {
 
   let waitingFor = 0;
   let chunks = [];
@@ -106,21 +107,32 @@ async function* sanitize(source: Readable) {
 
     chunks.push(chunk);
 
-    const pending = Buffer.concat(chunks);
-    const header = findHeader(pending);
-    if (header) {
-      const contentLength = header.contentLength;
-      const newChunk = pending.subarray(header.begin, header.end + contentLength);
-      const headerLength = header.end - header.begin;
-      waitingFor = headerLength + contentLength - newChunk.length;
-      chunks = [];
-
-      yield newChunk;
-      continue;
+    while (chunks.length > 0) {
+      const pending = Buffer.concat(chunks);
+      const header = findHeader(pending);
+      if (header) {
+        if (header.begin > 0) {
+          debugDiscarded(pending.subarray(0, header.begin));
+        }
+        const contentLength = header.contentLength;
+        const contentEnd = header.end + contentLength;
+        const newChunk = pending.subarray(header.begin, contentEnd);
+        const headerLength = header.end - header.begin;
+        waitingFor = headerLength + contentLength - newChunk.length;
+        chunks = waitingFor > 0 ? [] : [pending.subarray(contentEnd)];
+        yield newChunk;
+      } else {
+        // Reuse concat result
+        chunks = [pending];
+        break;
+      }
     }
+  }
 
-    // Reuse concat result
-    chunks = [pending];
+  function debugDiscarded(discarded: Buffer) {
+    debugChannel.appendLine("> STDOUT");
+    debugChannel.append(discarded.toString('utf-8'));
+    debugChannel.appendLine("< STDOUT");
   }
 }
 

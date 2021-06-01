@@ -2,6 +2,11 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.6.0
+
+- Avoid losing messages after stdout sanitization.
+- Log discarded server output to the _Idris 2 LSP Server_ channel for easier debugging.
+
 ## 0.5.0
 
 - Avoid losing messages due to stdout sanitization.
