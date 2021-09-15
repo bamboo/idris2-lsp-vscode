@@ -2,6 +2,10 @@
 
 All notable changes to the idris2-lsp extension will be documented in this file.
 
+## 0.7.0
+
+- Introduce _Idris: Evaluation selection_ command bound to `CTRL+SHIFT+ALT+ENTER`
+
 ## 0.6.0
 
 - Avoid losing messages after stdout sanitization.

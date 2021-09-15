@@ -23,6 +23,28 @@
 	],
 	"main": "./out/main.js",
 	"contributes": {
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "idris2-lsp.repl.eval",
+					"when": "editorLangId == idris"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"key": "ctrl+shift+alt+enter",
+				"command": "idris2-lsp.repl.eval"
+			}
+		],
+		"commands": [
+			{
+				"command": "idris2-lsp.repl.eval",
+				"title": "Idris: Evaluate selection",
+				"enablement": "editorLangId == idris",
+				"icon": "$(preview)"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "Idris2",

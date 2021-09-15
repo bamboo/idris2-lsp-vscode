@@ -4,6 +4,11 @@ import {
   ExtensionContext,
   window,
   OutputChannel,
+  commands,
+  TextEditorEdit,
+  TextEditor,
+  MarkdownString,
+  DecorationRangeBehavior,
 } from 'vscode';
 
 import {
@@ -61,6 +66,77 @@ export function activate(context: ExtensionContext) {
       client.stop();
     }
   });
+  registerCommandHandlersFor(client, context);
+}
+
+function registerCommandHandlersFor(client: LanguageClient, context: ExtensionContext) {
+  const replDecorationType = window.createTextEditorDecorationType({
+    border: '2px inset darkgray',
+    borderRadius: '5px',
+    after: {
+      color: 'darkgray',
+    },
+    rangeBehavior: DecorationRangeBehavior.ClosedClosed
+  });
+  context.subscriptions.push(
+    commands.registerTextEditorCommand(
+      'idris2-lsp.repl.eval',
+      (editor: TextEditor, _edit: TextEditorEdit, customCode) => {
+        const code: string = customCode || editor.document.getText(editor.selection);
+        if (code.length == 0) {
+          // clear decorations
+          editor.setDecorations(replDecorationType, []);
+          return;
+        }
+        client
+          .sendRequest("workspace/executeCommand", { command: "repl", arguments: [code] })
+          .then(
+            (res) => {
+              const code = res as string;
+              return {
+                hover: new MarkdownString().appendCodeblock(code, 'idris'),
+                preview: code
+              };
+            },
+            (e) => {
+              const error = `${e}`;
+              return {
+                hover: new MarkdownString().appendText(error),
+                preview: error
+              };
+            }
+          )
+          .then((res) => {
+            console.log(`>${res.preview}<`);
+            editor.setDecorations(
+              replDecorationType,
+              [{
+                range: editor.selection,
+                hoverMessage: res.hover,
+                renderOptions: {
+                  after: {
+                    contentText: ' => ' + inlineReplPreviewFor(res.preview) + ' ',
+                  },
+                }
+              }]
+            );
+          });
+      }
+    )
+  );
+}
+
+function inlineReplPreviewFor(res: string) {
+  const maxPreviewLength = 80;
+  const lines = res.split(/\r?\n/, 2);
+  const firstLine = lines[0];
+  const ellipsis = '…';
+  if (lines.length > 1) {
+    return firstLine.substring(0, maxPreviewLength) + ellipsis;
+  }
+  return firstLine.length > maxPreviewLength
+    ? firstLine.substring(0, maxPreviewLength) + ellipsis
+    : firstLine;
 }
 
 function sendExitCommandTo(server: NodeJS.WritableStream) {
