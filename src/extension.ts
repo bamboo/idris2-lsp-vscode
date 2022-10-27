@@ -19,7 +19,7 @@ import {
 } from 'vscode-languageclient/node';
 
 import { Readable } from 'stream';
-import process = require('process')
+import * as process from 'process'
 
 const baseName = 'Idris 2 LSP';
 
