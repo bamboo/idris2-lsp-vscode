@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
   const command: string = extensionConfig.get("path") || "";
   const debugChannel = window.createOutputChannel(baseName + ' Server');
   const serverOptions: ServerOptions = () => new Promise<StreamInfo>((resolve, reject) => {
-    const serverProcess = spawn(command, [], { cwd: rootPath() });
+    const serverProcess = spawn(command, [], { cwd: rootPath(), shell: true });
     if (!serverProcess || !serverProcess.pid) {
       return reject(`Launching server using command ${command} failed.`);
     }
