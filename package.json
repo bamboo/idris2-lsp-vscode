@@ -3,7 +3,7 @@
 	"description": "Idris2 client for the language server protocol",
 	"author": "Rodrigo B. de Oliveira",
 	"license": "MIT",
-	"version": "0.6.0",
+	"version": "0.7.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/bamboo/idris2-lsp-vscode"
@@ -53,6 +53,48 @@
 					"type": "string",
 					"default": "idris2-lsp",
 					"description": "Command to start Idris 2 language server process."
+				},
+				"idris2-lsp.loglevel": {
+					"type": "string",
+					"enum": [
+						"debug",
+						"info",
+						"warning",
+						"error",
+						"critical"
+					],
+					"default": "error",
+					"definition": "The log level of the Server."
+				},
+				"idris2-lsp.logFile": {
+					"type" : "string",
+					"default": "stderr",
+					"definition": "Absolute location of the log file for the server."
+				},
+				"idris2-lsp.longActionTimeout": {
+					"type" : "number",
+					"default": 5000,
+					"definition": "Timeout in ms for long actions, e.g. expression search."
+				},
+				"idris2-lsp.maxCodeActionResults": {
+					"type" : "number",
+					"default": 5,
+					"definition": "Maximum number of multiple code actions for a single command, e.g. expression search."
+				},
+				"idris2-lsp.showImplicits": {
+					"type" : "boolean",
+					"default": false,
+					"definition": "Show implicits in hovers."
+				},
+				"idris2-lsp.showMachineNames": {
+					"type" : "boolean",
+					"default": false,
+					"definition": "Show machine names in hovers."
+				},
+				"idris2-lsp.fullNamespace": {
+					"type" : "boolean",
+					"default": false,
+					"definition": "Show full namespace in hovers"
 				},
 				"idris2-lsp.trace.server": {
 					"scope": "window",
