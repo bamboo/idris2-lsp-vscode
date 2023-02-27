@@ -48,11 +48,21 @@ export function activate(context: ExtensionContext) {
       detached: true // let us handle the disposal of the server
     });
   });
+  let initializationOptions = {
+    logSeverity: extensionConfig.get("logSeverity") || "debug",
+    logFile: extensionConfig.get("logFile") || "stderr",
+    longActionTimeout: extensionConfig.get("longActionTimeout") || 5000,
+    maxCodeActionResults: extensionConfig.get("maxCodeActionResults") || 5,
+    showImplicits: extensionConfig.get("showImplicits") || false,
+    showMachineNames: extensionConfig.get("showMachineNames") || false,
+    fullNamespace: extensionConfig.get("fullNamespace") || false,
+  };
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: 'file', language: 'idris' },
       { scheme: 'file', language: 'lidr' }
     ],
+    initializationOptions: initializationOptions,
   };
   const client = new LanguageClient(
     'idris2-lsp',
