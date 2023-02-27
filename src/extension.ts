@@ -19,6 +19,7 @@ import {
 } from 'vscode-languageclient/node';
 
 import { Readable } from 'stream';
+import * as process from 'process'
 
 const baseName = 'Idris 2 LSP';
 
@@ -27,7 +28,7 @@ export function activate(context: ExtensionContext) {
   const command: string = extensionConfig.get("path") || "";
   const debugChannel = window.createOutputChannel(baseName + ' Server');
   const serverOptions: ServerOptions = () => new Promise<StreamInfo>((resolve, reject) => {
-    const serverProcess = spawn(command, [], { cwd: rootPath() });
+    const serverProcess = spawn(command, [], { cwd: rootPath(), shell: process.platform === 'win32' });
     if (!serverProcess || !serverProcess.pid) {
       return reject(`Launching server using command ${command} failed.`);
     }
