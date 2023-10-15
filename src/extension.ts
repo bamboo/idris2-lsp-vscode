@@ -57,6 +57,7 @@ export function activate(context: ExtensionContext) {
     showImplicits: extensionConfig.get("showImplicits") || false,
     showMachineNames: extensionConfig.get("showMachineNames") || false,
     fullNamespace: extensionConfig.get("fullNamespace") || false,
+    briefCompletions: extensionConfig.get("briefCompletions") || false,
   };
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
