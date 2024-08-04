@@ -96,6 +96,11 @@
 					"default": false,
 					"definition": "Show full namespace in hovers"
 				},
+				"idris2-lsp.briefCompletions": {
+					"type": "boolean",
+					"default": true,
+					"definition": "Insert function name without arguments when completing."
+				},
 				"idris2-lsp.trace.server": {
 					"scope": "window",
 					"type": "string",
