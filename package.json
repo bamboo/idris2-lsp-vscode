@@ -19,7 +19,8 @@
 	},
 	"activationEvents": [
 		"onLanguage:idris",
-		"onLanguage:lidr"
+		"onLanguage:lidr",
+		"workspaceContains:*.ipkg"
 	],
 	"main": "./out/main.js",
 	"contributes": {
@@ -163,6 +164,14 @@
 				"language": "lidr",
 				"scopeName": "source.idris.literate",
 				"path": "./syntaxes/lidr.tmLanguage.json"
+			},
+			{
+				"path": "./syntaxes/inject.json",
+				"scopeName": "idris.injection",
+				"injectTo": ["text.html.markdown"],
+				"embeddedLanguages": {
+					"meta.embedded.block.idris": "idris"
+				}
 			}
 		]
 	},
