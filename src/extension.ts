@@ -9,9 +9,13 @@ import {
   TextEditor,
   MarkdownString,
   DecorationRangeBehavior,
+  Range,
+  WorkspaceEdit,
+  Uri,
 } from 'vscode';
 
 import {
+  CodeAction,
   LanguageClient,
   LanguageClientOptions,
   ServerOptions,
@@ -133,6 +137,77 @@ function registerCommandHandlersFor(client: LanguageClient, context: ExtensionCo
               }]
             );
           });
+      }
+    )
+  );
+  context.subscriptions.push(
+    commands.registerTextEditorCommand(
+      'idris2-lsp.refineHole',
+      (editor: TextEditor, _edit: TextEditorEdit) => {
+        if (editor.document.isDirty) {
+          window.showErrorMessage("Unable to refine with unsaved changes");
+          return;
+        }
+        window.showInputBox({
+          placeHolder: "Refine with",
+        }).then(
+          (hint) => {
+            if (hint) {
+              const range = editor.document.getWordRangeAtPosition(editor.selection.active);
+              const params = {
+                codeAction: {
+                  textDocument: {
+                    uri: editor.document.uri.toString(),
+                  },
+                  range: {
+                    start: range.start,
+                    end: range.end,
+                  },
+                  context: {
+                    diagnostics: [],
+                  },
+                },
+                hint: hint,
+              };
+              client
+                .sendRequest("workspace/executeCommand", { command: "refineHole", arguments: [params] })
+                .then(
+                  (res) => {
+                    const actions = res as CodeAction[];
+
+                    // Currently, if the server encounters an error while trying to refine,
+                    // it just logs the error and responds with an empty list of edits.
+                    // If the server is updated to respond with the errors, this generic error message can be removed.
+                    if (actions.length === 0) {
+                      window.showErrorMessage("Failed to refine");
+                    } else {
+                      const workspaceEdit = new WorkspaceEdit();
+                      
+                      for (const action of actions) {
+                        if (action.edit) {
+                          for (const uri in action.edit.changes) {
+                            for (const change of action.edit.changes[uri]) {
+                              workspaceEdit.replace(Uri.parse(uri), change.range as Range, change.newText);
+                            }
+                          }
+                        }
+                      }
+
+                      workspace.applyEdit(workspaceEdit).then(
+                        (success) => {
+                          if (!success) {
+                            window.showErrorMessage("Failed to apply edit");
+                          }
+                        },
+                        (e) => window.showErrorMessage(`${e}`),
+                      );
+                    }
+                  },
+                  (e) => window.showErrorMessage(`${e}`),
+                );
+            }
+          }
+        );
       }
     )
   );

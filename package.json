@@ -28,6 +28,10 @@
 				{
 					"command": "idris2-lsp.repl.eval",
 					"when": "editorLangId == idris"
+				},
+				{
+					"command": "idris2-lsp.refineHole",
+					"when": "editorLangId == idris"
 				}
 			]
 		},
@@ -43,6 +47,12 @@
 				"title": "Idris: Evaluate selection",
 				"enablement": "editorLangId == idris",
 				"icon": "$(preview)"
+			},
+			{
+				"command": "idris2-lsp.refineHole",
+				"title": "Idris: Refine hole",
+				"enablement": "editorLangId == idris",
+				"icon": "$(wrench)"
 			}
 		],
 		"configuration": {
