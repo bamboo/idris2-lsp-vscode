@@ -53,7 +53,7 @@ export function activate(context: ExtensionContext) {
       detached: true // let us handle the disposal of the server
     });
   });
-  let initializationOptions = {
+  const initializationOptions = {
     logSeverity: extensionConfig.get("logSeverity") || "debug",
     logFile: extensionConfig.get("logFile") || "stderr",
     longActionTimeout: extensionConfig.get("longActionTimeout") || 5000,
@@ -66,6 +66,7 @@ export function activate(context: ExtensionContext) {
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: 'file', language: 'idris' },
+      { scheme: 'file', language: 'markdown', pattern: '**/*.{lidr,idr}.md' },
       { scheme: 'file', language: 'lidr' }
     ],
     initializationOptions: initializationOptions,
