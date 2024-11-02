@@ -12,6 +12,8 @@ import {
   Range,
   WorkspaceEdit,
   Uri,
+  Position as VSCodePosition,
+  Selection,
 } from 'vscode';
 
 import {
@@ -95,6 +97,7 @@ function registerCommandHandlersFor(client: LanguageClient, context: ExtensionCo
     },
     rangeBehavior: DecorationRangeBehavior.ClosedClosed
   });
+
   context.subscriptions.push(
     commands.registerTextEditorCommand(
       'idris2-lsp.repl.eval',
@@ -141,6 +144,7 @@ function registerCommandHandlersFor(client: LanguageClient, context: ExtensionCo
       }
     )
   );
+
   context.subscriptions.push(
     commands.registerTextEditorCommand(
       'idris2-lsp.refineHole',
@@ -183,7 +187,7 @@ function registerCommandHandlersFor(client: LanguageClient, context: ExtensionCo
                       window.showErrorMessage("Failed to refine");
                     } else {
                       const workspaceEdit = new WorkspaceEdit();
-                      
+
                       for (const action of actions) {
                         if (action.edit) {
                           for (const uri in action.edit.changes) {
@@ -212,6 +216,47 @@ function registerCommandHandlersFor(client: LanguageClient, context: ExtensionCo
       }
     )
   );
+
+  context.subscriptions.push(
+    commands.registerTextEditorCommand(
+      'idris2-lsp.metavars',
+      async (editor: TextEditor, _edit: TextEditorEdit) => {
+        try {
+          const result = await client.sendRequest("workspace/executeCommand", { command: "metavars" });
+
+          if (!Array.isArray(result) || result.length === 0) {
+            window.showInformationMessage('No metavars in context');
+            return;
+          }
+
+          const items = result.map(metavar => ({
+            label: `${metavar.name} : ${metavar.type}`,
+            metavar: metavar
+          }));
+
+          const selected = await window.showQuickPick(items, {
+            placeHolder: 'Select a metavariable to jump to',
+          });
+
+          if (selected && selected.metavar.location) {
+            const location = selected.metavar.location;
+            const uri = Uri.parse(location.uri);
+            const position = new VSCodePosition(location.range.start.line, location.range.start.character);
+            const vscodePosition = new VSCodePosition(position.line, position.character);
+            const selection = new Selection(vscodePosition, vscodePosition);
+            const range = new Range(vscodePosition, vscodePosition);
+            const doc = await workspace.openTextDocument(uri);
+            await window.showTextDocument(doc);
+            editor.selection = selection;
+            editor.revealRange(range, 1);
+          }
+        } catch (error) {
+          window.showErrorMessage(`Error fetching metavars: ${error}`);
+        }
+      }
+    )
+  );
+
 }
 
 function inlineReplPreviewFor(res: string) {
@@ -237,7 +282,7 @@ function sendExitCommandTo(server: NodeJS.WritableStream) {
  * Returns a new stream with spurious content removed, anything between proper
  * [LSP messages](https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/)
  * is discarded.
- * 
+ *
  * This is necessary because the Idris 2 core writes error messages directly to stdout.
  *
  * @param source idris2-lsp stdout

@@ -29,7 +29,9 @@
       "match": "(\\|\\|\\|).*$\n?",
       "comment": "Line comment"
     },
-    { "include": "#multiline_comment" },
+    {
+      "include": "#multiline_comment"
+    },
     {
       "begin": "\\b(module)\\b",
       "beginCaptures": {
@@ -62,10 +64,18 @@
         }
       ]
     },
-    { "include": "#param_decl" },
-    { "include": "#data_decl" },
-    { "include": "#function_signature" },
-    { "include": "#ty_expression" }
+    {
+      "include": "#param_decl"
+    },
+    {
+      "include": "#data_decl"
+    },
+    {
+      "include": "#function_signature"
+    },
+    {
+      "include": "#ty_expression"
+    }
   ],
   "repository": {
     "multiline_comment": {
@@ -85,11 +95,23 @@
       "begin": "\\b(parameters)\\s+(\\()",
       "end": "(\\))$",
       "beginCaptures": {
-        "1": { "name": "keyword.other.idris" },
-        "2": { "name": "punctuation.context.begin.idris" }
+        "1": {
+          "name": "keyword.other.idris"
+        },
+        "2": {
+          "name": "punctuation.context.begin.idris"
+        }
       },
-      "endCaptures": { "1": { "name": "punctuation.context.end.idris" } },
-      "patterns": [{ "include": "#ty_expression" }]
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.context.end.idris"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#ty_expression"
+        }
+      ]
     },
     "context_signature": {
       "patterns": [
@@ -111,7 +133,11 @@
               "name": "keyword.operator.double-arrow.idris"
             }
           },
-          "patterns": [{ "include": "#ty_expression" }]
+          "patterns": [
+            {
+              "include": "#ty_expression"
+            }
+          ]
         }
       ]
     },
@@ -123,54 +149,117 @@
           "comment": "(x : Nat)",
           "begin": "(\\()([\\w']+)\\s*(:)(?!:)",
           "beginCaptures": {
-            "1": { "name": "punctuation.delimiter.idris" },
-            "2": { "name": "variable.parameter.idris" },
-            "3": { "name": "keyword.operator.annot.idris" }
+            "1": {
+              "name": "punctuation.delimiter.idris"
+            },
+            "2": {
+              "name": "variable.parameter.idris"
+            },
+            "3": {
+              "name": "keyword.operator.annot.idris"
+            }
           },
           "end": "\\)",
           "endCaptures": {
-            "0": { "name": "punctuation.delimiter.idris" }
+            "0": {
+              "name": "punctuation.delimiter.idris"
+            }
           },
-          "patterns": [{ "include": "#ty_expression" }]
+          "patterns": [
+            {
+              "include": "#ty_expression"
+            }
+          ]
         },
         {
           "name": "meta.parameter.implicit.idris",
           "comment": "{auto p : a = b}",
           "begin": "(\\{)((auto|default .+)\\s+)?([\\w']+)\\s*(:)(?!:)",
           "beginCaptures": {
-            "1": { "name": "punctuation.delimiter.idris" },
-            "2": { "name": "storage.modifier.idris" },
-            "4": { "name": "variable.parameter.idris" },
-            "5": { "name": "keyword.operator.annot.idris" }
+            "1": {
+              "name": "punctuation.delimiter.idris"
+            },
+            "2": {
+              "name": "storage.modifier.idris"
+            },
+            "4": {
+              "name": "variable.parameter.idris"
+            },
+            "5": {
+              "name": "keyword.operator.annot.idris"
+            }
           },
           "end": "\\}",
           "endCaptures": {
-            "0": { "name": "punctuation.delimiter.idris" }
+            "0": {
+              "name": "punctuation.delimiter.idris"
+            }
           },
-          "patterns": [{ "include": "#ty_expression" }]
+          "patterns": [
+            {
+              "include": "#ty_expression"
+            }
+          ]
         }
       ]
     },
     "ty_expression": {
       "patterns": [
-        { "name": "keyword.operator.arrow.idris", "match": "->" },
-        { "include": "#parameter_type" },
-        { "include": "#language_const" },
-        { "include": "#operator" },
-        { "include": "#quasiquote_paren" },
-        { "include": "#quasiquote_double_bracket" },
-        { "include": "#quasiquote_bracket" },
-        { "include": "#quasiquote_square_bracket" },
-        { "include": "#infix_function" },
-        { "include": "#prelude_type" },
-        { "include": "#delimiter" },
-        { "include": "#number_nat" },
-        { "include": "#number_integer" },
-        { "include": "#number_float" },
-        { "include": "#unit" },
-        { "include": "#string_double" },
-        { "include": "#string_single" },
-        { "include": "#data_ctor" }
+        {
+          "name": "keyword.operator.arrow.idris",
+          "match": "->"
+        },
+        {
+          "include": "#parameter_type"
+        },
+        {
+          "include": "#language_const"
+        },
+        {
+          "include": "#operator"
+        },
+        {
+          "include": "#quasiquote_paren"
+        },
+        {
+          "include": "#quasiquote_double_bracket"
+        },
+        {
+          "include": "#quasiquote_bracket"
+        },
+        {
+          "include": "#quasiquote_square_bracket"
+        },
+        {
+          "include": "#infix_function"
+        },
+        {
+          "include": "#prelude_type"
+        },
+        {
+          "include": "#delimiter"
+        },
+        {
+          "include": "#number_nat"
+        },
+        {
+          "include": "#number_integer"
+        },
+        {
+          "include": "#number_float"
+        },
+        {
+          "include": "#unit"
+        },
+        {
+          "include": "#string_double"
+        },
+        {
+          "include": "#string_single"
+        },
+        {
+          "include": "#data_ctor"
+        }
       ]
     },
     "function_signature": {
@@ -189,8 +278,12 @@
       },
       "end": "(?!->)",
       "patterns": [
-        { "include": "#context_signature" },
-        { "include": "#ty_expression" }
+        {
+          "include": "#context_signature"
+        },
+        {
+          "include": "#ty_expression"
+        }
       ],
       "comment": "The end patterm is a bit tricky. It's either ';' or something, at the end of the line,\nbut not '->', because a type signature can be multiline. Though, it doesn't help, if you\nbreak the signature before arrows."
     },
@@ -230,14 +323,24 @@
       "name": "meta.declaration.data.idris",
       "begin": "\\b(data|codata|class|instance|interface|implementation|record)\\s",
       "beginCaptures": {
-        "1": { "name": "keyword.other.idris" }
+        "1": {
+          "name": "keyword.other.idris"
+        }
       },
       "end": "\\b(where)\\b|(=)|$",
       "endCaptures": {
-        "1": { "name": "keyword.other.idris" },
-        "2": { "name": "keyword.operator.idris" }
+        "1": {
+          "name": "keyword.other.idris"
+        },
+        "2": {
+          "name": "keyword.operator.idris"
+        }
       },
-      "patterns": [{ "include": "#ty_expression" }]
+      "patterns": [
+        {
+          "include": "#ty_expression"
+        }
+      ]
     },
     "data_ctor": {
       "patterns": [
@@ -274,8 +377,12 @@
           "name": "keyword.operator.arrow.idris",
           "match": "->"
         },
-        { "include": "#parameter_type" },
-        { "include": "#ty_expression" }
+        {
+          "include": "#parameter_type"
+        },
+        {
+          "include": "#ty_expression"
+        }
       ]
     },
     "quasiquote_paren": {
@@ -297,8 +404,12 @@
           "name": "keyword.operator.arrow.idris",
           "match": "->"
         },
-        { "include": "#parameter_type" },
-        { "include": "#ty_expression" }
+        {
+          "include": "#parameter_type"
+        },
+        {
+          "include": "#ty_expression"
+        }
       ]
     },
     "quasiquote_double_bracket": {
@@ -320,8 +431,12 @@
           "name": "keyword.operator.arrow.idris",
           "match": "->"
         },
-        { "include": "#parameter_type" },
-        { "include": "#ty_expression" }
+        {
+          "include": "#parameter_type"
+        },
+        {
+          "include": "#ty_expression"
+        }
       ]
     },
     "quasiquote_square_bracket": {
@@ -343,8 +458,12 @@
           "name": "keyword.operator.arrow.idris",
           "match": "->"
         },
-        { "include": "#parameter_type" },
-        { "include": "#ty_expression" }
+        {
+          "include": "#parameter_type"
+        },
+        {
+          "include": "#ty_expression"
+        }
       ]
     },
     "infix_function": {

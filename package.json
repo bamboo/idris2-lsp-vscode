@@ -1,213 +1,232 @@
 {
-	"name": "idris2-lsp",
-	"description": "Idris2 client for the language server protocol",
-	"author": "Rodrigo B. de Oliveira",
-	"license": "MIT",
-	"version": "0.7.1",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/bamboo/idris2-lsp-vscode"
-	},
-	"publisher": "bamboo",
-	"categories": [],
-	"keywords": [
-		"idris",
-		"lsp"
-	],
-	"engines": {
-		"vscode": "^1.36.1"
-	},
-	"activationEvents": [
-		"onLanguage:idris",
-		"onLanguage:lidr",
-		"workspaceContains:*.ipkg"
-	],
-	"main": "./out/main.js",
-	"contributes": {
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "idris2-lsp.repl.eval",
-					"when": "editorLangId == idris"
-				},
-				{
-					"command": "idris2-lsp.refineHole",
-					"when": "editorLangId == idris"
-				}
-			]
-		},
-		"keybindings": [
-			{
-				"key": "ctrl+shift+alt+enter",
-				"command": "idris2-lsp.repl.eval"
-			}
-		],
-		"commands": [
-			{
-				"command": "idris2-lsp.repl.eval",
-				"title": "Idris: Evaluate selection",
-				"enablement": "editorLangId == idris",
-				"icon": "$(preview)"
-			},
-			{
-				"command": "idris2-lsp.refineHole",
-				"title": "Idris: Refine hole",
-				"enablement": "editorLangId == idris",
-				"icon": "$(wrench)"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "Idris2",
-			"properties": {
-				"idris2-lsp.path": {
-					"type": "string",
-					"default": "idris2-lsp",
-					"description": "Command to start Idris 2 language server process."
-				},
-				"idris2-lsp.loglevel": {
-					"type": "string",
-					"enum": [
-						"debug",
-						"info",
-						"warning",
-						"error",
-						"critical"
-					],
-					"default": "error",
-					"definition": "The log level of the Server."
-				},
-				"idris2-lsp.logFile": {
-					"type" : "string",
-					"default": "stderr",
-					"definition": "Absolute location of the log file for the server."
-				},
-				"idris2-lsp.longActionTimeout": {
-					"type" : "number",
-					"default": 5000,
-					"definition": "Timeout in ms for long actions, e.g. expression search."
-				},
-				"idris2-lsp.maxCodeActionResults": {
-					"type" : "number",
-					"default": 5,
-					"definition": "Maximum number of multiple code actions for a single command, e.g. expression search."
-				},
-				"idris2-lsp.showImplicits": {
-					"type" : "boolean",
-					"default": false,
-					"definition": "Show implicits in hovers."
-				},
-				"idris2-lsp.showMachineNames": {
-					"type" : "boolean",
-					"default": false,
-					"definition": "Show machine names in hovers."
-				},
-				"idris2-lsp.fullNamespace": {
-					"type" : "boolean",
-					"default": false,
-					"definition": "Show full namespace in hovers"
-				},
-				"idris2-lsp.briefCompletions": {
-					"type": "boolean",
-					"default": true,
-					"definition": "Insert function name without arguments when completing."
-				},
-				"idris2-lsp.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "off",
-					"description": "Traces the communication between VS Code and the language server."
-				}
-			}
-		},
-		"languages": [
-			{
-				"id": "idris",
-				"aliases": [
-					"Idris",
-					"idris"
-				],
-				"configuration": "./language-configuration.json",
-				"extensions": [
-					".idr"
-				]
-			},
-			{
-				"id": "ipkg",
-				"aliases": [
-					"iPKG",
-					"ipkg"
-				],
-				"extensions": [
-					".ipkg"
-				]
-			},
-			{
-				"id": "lidr",
-				"aliases": [
-					"lidr",
-					"Literate Idris",
-					"literate idris"
-				],
-				"extensions": [
-					".lidr"
-				]
-			}
-		],
-		"grammars": [
-			{
-				"language": "idris",
-				"scopeName": "source.idris",
-				"path": "./syntaxes/idris.tmLanguage.json"
-			},
-			{
-				"language": "ipkg",
-				"scopeName": "source.ipkg",
-				"path": "./syntaxes/ipkg.tmLanguage.json"
-			},
-			{
-				"language": "lidr",
-				"scopeName": "source.idris.literate",
-				"path": "./syntaxes/lidr.tmLanguage.json"
-			},
-			{
-				"path": "./syntaxes/inject.json",
-				"scopeName": "idris.injection",
-				"injectTo": ["text.html.markdown"],
-				"embeddedLanguages": {
-					"meta.embedded.block.idris": "idris"
-				}
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run -S esbuild-base -- --minify",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
-		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-		"esbuild": "npm run -S esbuild-base -- --sourcemap",
-		"esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
-		"test-compile": "tsc -p ./",
-		"test": "sh ./scripts/e2e.sh"
-	},
-	"dependencies": {
-		"vscode-languageclient": "^7.0.0"
-	},
-	"devDependencies": {
-		"@types/mocha": "^8.2.2",
-		"@types/node": "^12.12.0",
-		"@types/vscode": "^1.36.1",
-		"@typescript-eslint/eslint-plugin": "^4.21.0",
-		"@typescript-eslint/parser": "^4.21.0",
-		"esbuild": "^0.11.17",
-		"eslint": "^7.23.0",
-		"mocha": "^8.3.2",
-		"typescript": "^4.2.3",
-		"vscode-test": "^1.3.0"
-	}
+  "name": "idris2-lsp",
+  "description": "Idris2 client for the language server protocol",
+  "author": "Rodrigo B. de Oliveira",
+  "license": "MIT",
+  "version": "0.7.2",
+  "icon": "images/idris.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bamboo/idris2-lsp-vscode"
+  },
+  "publisher": "bamboo",
+  "categories": [],
+  "keywords": [
+    "idris",
+    "lsp"
+  ],
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "activationEvents": [
+    "onLanguage:idris",
+    "onLanguage:lidr",
+    "workspaceContains:*.ipkg"
+  ],
+  "main": "./out/main.js",
+  "contributes": {
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "idris2-lsp.repl.eval",
+          "when": "editorLangId == idris"
+        },
+        {
+          "command": "idris2-lsp.refineHole",
+          "when": "editorLangId == idris"
+        },
+        {
+          "command": "idris2-lsp.metavars",
+          "when": "editorLangId == idris"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "key": "ctrl+shift+alt+enter",
+        "command": "idris2-lsp.repl.eval"
+      }
+    ],
+    "commands": [
+      {
+        "command": "idris2-lsp.repl.eval",
+        "title": "Idris: Evaluate selection",
+        "enablement": "editorLangId == idris",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "idris2-lsp.refineHole",
+        "title": "Idris: Refine hole",
+        "enablement": "editorLangId == idris",
+        "icon": "$(wrench)"
+      },
+      {
+        "command": "idris2-lsp.metavars",
+        "title": "Idris: Show metavariables of current file",
+        "enablement": "editorLangId == idris",
+        "icon": "$(wrench)"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Idris2",
+      "properties": {
+        "idris2-lsp.path": {
+          "type": "string",
+          "default": "idris2-lsp",
+          "description": "Command to start Idris 2 language server process."
+        },
+        "idris2-lsp.loglevel": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical"
+          ],
+          "default": "error",
+          "definition": "The log level of the Server."
+        },
+        "idris2-lsp.logFile": {
+          "type": "string",
+          "default": "stderr",
+          "definition": "Absolute location of the log file for the server."
+        },
+        "idris2-lsp.longActionTimeout": {
+          "type": "number",
+          "default": 5000,
+          "definition": "Timeout in ms for long actions, e.g. expression search."
+        },
+        "idris2-lsp.maxCodeActionResults": {
+          "type": "number",
+          "default": 5,
+          "definition": "Maximum number of multiple code actions for a single command, e.g. expression search."
+        },
+        "idris2-lsp.showImplicits": {
+          "type": "boolean",
+          "default": false,
+          "definition": "Show implicits in hovers."
+        },
+        "idris2-lsp.showMachineNames": {
+          "type": "boolean",
+          "default": false,
+          "definition": "Show machine names in hovers."
+        },
+        "idris2-lsp.fullNamespace": {
+          "type": "boolean",
+          "default": false,
+          "definition": "Show full namespace in hovers"
+        },
+        "idris2-lsp.briefCompletions": {
+          "type": "boolean",
+          "default": true,
+          "definition": "Insert function name without arguments when completing."
+        },
+        "idris2-lsp.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "idris",
+        "aliases": [
+          "Idris",
+          "idris"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".idr"
+        ]
+      },
+      {
+        "id": "ipkg",
+        "aliases": [
+          "iPKG",
+          "ipkg"
+        ],
+        "extensions": [
+          ".ipkg"
+        ]
+      },
+      {
+        "id": "lidr",
+        "aliases": [
+          "lidr",
+          "Literate Idris",
+          "literate idris"
+        ],
+        "extensions": [
+          ".lidr"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "idris",
+        "scopeName": "source.idris",
+        "path": "./syntaxes/idris.tmLanguage.json"
+      },
+      {
+        "language": "ipkg",
+        "scopeName": "source.ipkg",
+        "path": "./syntaxes/ipkg.tmLanguage.json"
+      },
+      {
+        "language": "lidr",
+        "scopeName": "source.idris.literate",
+        "path": "./syntaxes/lidr.tmLanguage.json"
+      },
+      {
+        "path": "./syntaxes/inject.json",
+        "scopeName": "idris.injection",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.idris": "idris"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run -S esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./",
+    "test": "sh ./scripts/e2e.sh",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@vscode/vsce": "^3.2.1",
+    "vscode-languageclient": "^7.0.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.2",
+    "@eslint/js": "^9.14.0",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^22.8.0",
+    "@types/vscode": "^1.52.0",
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "mocha": "^10.7.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0",
+    "vscode-test": "^1.3.0"
+  }
 }

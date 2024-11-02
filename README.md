@@ -14,8 +14,18 @@ The `idris2-lsp` extension can be installed from the [Visual Studio Marketplace]
 
 It can also be built and installed locally from the checkout directory with:
 
-    $ vsce package
-    $ code --install-extension idris2-lsp-${version}.vsix
+```sh
+npm install
+./sync-engine-version.sh update-in-place
+npm install
+rm -f *.vsix
+version=$(jq -r '.version' package.json)
+npm run lint
+npm run compile
+npm run esbuild
+vsce package
+code --install-extension "idris2-lsp-${version}.vsix" --force
+```
 
 ## Configuring the extension
 

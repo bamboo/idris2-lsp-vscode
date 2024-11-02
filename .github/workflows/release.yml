@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build source
+        run: |
+          npm run compile
+          npm run esbuild
+
+      # Create the extension via below in a dry run
+      - name: Package Extension
+        id: packageExtension
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: stub
+          dryRun: true
+
+      # upload built extension to new release
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: ${{ steps.packageExtension.outputs.vsixPath }}
+
+      # Publish to VS Marketplace
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
+          registryUrl: https://marketplace.visualstudio.com
+
+      # Publish to OpenVSX registry
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+          extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
